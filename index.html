@@ -30,7 +30,7 @@
             width: 100%;
             margin-top: 10px;
         }
-        input[type="file"], input[type="date"], input[type="time"] {
+        input[type="file"], input[type="date", input[type="time"] {
             display: none;
         }
         .hidden {
@@ -133,38 +133,28 @@
                 return;
             }
 
-            let post = { image, caption, scheduleDateTime };
-            let posts = JSON.parse(localStorage.getItem("scheduledPosts")) || [];
-            posts.push(post);
-            localStorage.setItem("scheduledPosts", JSON.stringify(posts));
+            let postData = {
+                image: image,
+                caption: caption,
+                scheduled_time: scheduleDateTime
+            };
 
-            alert("🎉 Post Scheduled Successfully!");
-            loadScheduledPosts();
-        });
-
-        function loadScheduledPosts() {
-            let posts = JSON.parse(localStorage.getItem("scheduledPosts")) || [];
-            let postList = document.getElementById("post-list");
-            postList.innerHTML = "";
-
-            posts.forEach((post, index) => {
-                let listItem = document.createElement("li");
-                listItem.innerHTML = `
-                    <img src="${post.image}" width="100">
-                    <p>${post.caption}</p>
-                    <p>📅 Scheduled: ${post.scheduleDateTime}</p>
-                    <button onclick="deletePost(${index})">🗑 Delete</button>
-                `;
-                postList.appendChild(listItem);
+            fetch("https://hook.eu2.make.com/tm8tj1xohh2eh6bs5b0gw9irhlpuqmj2", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(postData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("🎉 Post Sent to Make.com Successfully!");
+            })
+            .catch(error => {
+                console.error("❌ Error:", error);
+                alert("Failed to send post to Make.com");
             });
-        }
-
-        function deletePost(index) {
-            let posts = JSON.parse(localStorage.getItem("scheduledPosts")) || [];
-            posts.splice(index, 1);
-            localStorage.setItem("scheduledPosts", JSON.stringify(posts));
-            loadScheduledPosts();
-        }
+        });
     </script>
 </body>
 </html>
