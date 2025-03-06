@@ -98,18 +98,20 @@
             }
         });
 
-        // Fix: Ensure Date/Time selection works properly in Firefox & all browsers
+        // ✅ FIXED: Ensure the Date & Time Picker works correctly in Firefox & other browsers
         document.getElementById("pick-datetime").addEventListener("click", function() {
             let dateInput = document.getElementById("schedule-date");
-            dateInput.focus();
-            dateInput.showPicker(); // Opens date picker
+            dateInput.style.visibility = "visible"; // Temporarily make it visible
+            dateInput.click();
+            dateInput.style.visibility = "hidden"; // Hide it again after selection
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
             let timeInput = document.getElementById("schedule-time");
             setTimeout(() => {
-                timeInput.focus();
-                timeInput.showPicker(); // Opens time picker
+                timeInput.style.visibility = "visible"; // Temporarily make it visible
+                timeInput.click();
+                timeInput.style.visibility = "hidden"; // Hide it again after selection
             }, 200);
         });
 
