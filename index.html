@@ -57,67 +57,25 @@
     <div class="container">
         <h1>Instagram Automation</h1>
         
-        <!-- Upload Image Button -->
         <label class="button" for="image-upload">📷 Upload Image</label>
         <input type="file" id="image-upload" accept="image/*">
         <p id="image-status" class="hidden">✅ Image Selected</p>
         
-        <!-- Enter Caption Button -->
         <button class="button" id="enter-caption">📝 Enter Caption</button>
         <p id="caption-status" class="hidden"></p>
         
-        <!-- Pick Date/Time Button -->
         <button class="button" id="pick-datetime">📅 Pick Date & Time</button>
         <input type="date" id="schedule-date">
         <input type="time" id="schedule-time">
         <p id="time-status" class="hidden">✅ Date Selected</p>
         
-        <!-- Schedule Post Button -->
         <button class="button" id="schedule-post">🚀 Schedule Post</button>
         
-        <!-- Scheduled Posts Section -->
         <h2>Scheduled Posts</h2>
         <ul id="post-list"></ul>
     </div>
     
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            loadScheduledPosts();
-        });
-
-        document.getElementById("image-upload").addEventListener("change", function() {
-            document.getElementById("image-status").classList.remove("hidden");
-        });
-        
-        document.getElementById("enter-caption").addEventListener("click", function() {
-            let caption = prompt("Enter your caption:");
-            if (caption) {
-                document.getElementById("caption-status").textContent = "✅ Caption Added: " + caption;
-                document.getElementById("caption-status").classList.remove("hidden");
-            }
-        });
-
-        document.getElementById("pick-datetime").addEventListener("click", function() {
-            document.getElementById("schedule-date").style.display = "block";
-            document.getElementById("schedule-time").style.display = "block";
-            document.getElementById("schedule-date").focus();
-        });
-
-        document.getElementById("schedule-date").addEventListener("change", function() {
-            document.getElementById("schedule-time").focus();
-        });
-
-        document.getElementById("schedule-time").addEventListener("change", function() {
-            let selectedDate = document.getElementById("schedule-date").value;
-            let selectedTime = document.getElementById("schedule-time").value;
-
-            if (selectedDate && selectedTime) {
-                let formattedDateTime = `${selectedDate} ${selectedTime}`;
-                document.getElementById("time-status").classList.remove("hidden");
-                document.getElementById("time-status").textContent = "✅ Date Selected: " + formattedDateTime;
-            }
-        });
-
         document.getElementById("schedule-post").addEventListener("click", function() {
             let imageInput = document.getElementById("image-upload");
             if (imageInput.files.length === 0) {
@@ -151,15 +109,33 @@
                 .then(data => {
                     if (!data.success) throw new Error("Image upload failed");
                     let imageUrl = data.data.url;
+                    let postData = {
+                        image: imageUrl,
+                        caption: caption,
+                        scheduled_time: scheduleDateTime
+                    };
+
                     return fetch("https://hook.eu2.make.com/tm8tj1xohh2eh6bs5b0gw9irhlpuqmj2", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ image: imageUrl, caption: caption, scheduled_time: scheduleDateTime })
+                        body: JSON.stringify(postData)
                     });
                 })
-                .then(response => response.json())
-                .then(() => alert("🎉 Post Sent to Make.com Successfully!"))
-                .catch(error => alert("❌ Error: " + error.message));
+                .then(response => response.text())
+                .then(text => {
+                    try {
+                        let data = JSON.parse(text);
+                        console.log("✅ Make.com response:", data);
+                        alert("🎉 Post Sent to Make.com Successfully!");
+                    } catch (error) {
+                        console.warn("⚠️ Response is not JSON:", text);
+                        alert("🎉 Post Sent to Make.com Successfully (Response not in JSON)!");
+                    }
+                })
+                .catch(error => {
+                    console.error("❌ Error:", error);
+                    alert("Failed to send post to Make.com. Check console for details.");
+                });
             };
             reader.readAsDataURL(imageFile);
         });
