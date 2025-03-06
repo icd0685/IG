@@ -30,7 +30,6 @@
             width: 100%;
             margin-top: 10px;
         }
-        /* Instead of hiding the inputs, we make them small and always visible */
         input[type="file"], input[type="date"], input[type="time"] {
             width: 1px;
             height: 1px;
@@ -101,15 +100,12 @@
             }
         });
 
-        // ✅ FINAL FIX: Ensures the Date & Time Picker works in Firefox & all browsers
         document.getElementById("pick-datetime").addEventListener("click", function() {
-            let dateInput = document.getElementById("schedule-date");
-            dateInput.focus();
+            document.getElementById("schedule-date").focus();
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
-            let timeInput = document.getElementById("schedule-time");
-            timeInput.focus();
+            document.getElementById("schedule-time").focus();
         });
 
         document.getElementById("schedule-time").addEventListener("change", function() {
