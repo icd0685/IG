@@ -36,6 +36,21 @@
         .hidden {
             display: none;
         }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #eee;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100px;
+            display: block;
+            margin: auto;
+        }
     </style>
 </head>
 <body>
@@ -58,19 +73,20 @@
         
         <!-- Schedule Post Button -->
         <button class="button" id="schedule-post">🚀 Schedule Post</button>
+        
+        <!-- Scheduled Posts Section -->
+        <h2>Scheduled Posts</h2>
+        <ul id="post-list"></ul>
     </div>
     
     <script>
-        document.getElementById("pick-datetime").addEventListener("click", function() {
-    let datetimeInput = document.getElementById("schedule-time");
-    datetimeInput.focus();  // Ensure it gets focus first
-    datetimeInput.showPicker(); // Force open the picker (works in most browsers)
-});
+        document.addEventListener("DOMContentLoaded", function () {
+            loadScheduledPosts();
+        });
 
-document.getElementById("schedule-time").addEventListener("change", function() {
-    document.getElementById("time-status").classList.remove("hidden");
-    document.getElementById("time-status").textContent = "✅ Date Selected: " + this.value;
-});
+        document.getElementById("image-upload").addEventListener("change", function() {
+            document.getElementById("image-status").classList.remove("hidden");
+        });
         
         document.getElementById("enter-caption").addEventListener("click", function() {
             let caption = prompt("Enter your caption:");
@@ -81,7 +97,9 @@ document.getElementById("schedule-time").addEventListener("change", function() {
         });
         
         document.getElementById("pick-datetime").addEventListener("click", function() {
-            document.getElementById("schedule-time").click();
+            let datetimeInput = document.getElementById("schedule-time");
+            datetimeInput.focus();
+            datetimeInput.showPicker();
         });
         
         document.getElementById("schedule-time").addEventListener("change", function() {
@@ -90,8 +108,10 @@ document.getElementById("schedule-time").addEventListener("change", function() {
         });
         
         document.getElementById("schedule-post").addEventListener("click", function() {
-            alert("🎉 Post Scheduled Successfully!");
-        });
-    </script>
-</body>
-</html>
+            let imageInput = document.getElementById("image-upload");
+            let image = imageInput.files[0] ? URL.createObjectURL(imageInput.files[0]) : null;
+            let caption = document.getElementById("caption-status").textContent.replace("✅ Caption Added: ", "").trim();
+            let scheduleTime = document.getElementById("schedule-time").value;
+
+            if (!image || caption === "" || scheduleTime === "") {
+                alert("❌ Please select an image, enter a caption, and choose a date.");
