@@ -1,176 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram Automation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            max-width: 500px;
-            margin: auto;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .button {
-            display: block;
-            background-color: #3897f0;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-        input[type="file"], input[type="date"], input[type="time"] {
-            display: none;
-        }
-        .hidden {
-            display: none;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background: #eee;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-        img {
-            max-width: 100px;
-            display: block;
-            margin: auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Instagram Automation</h1>
-        
-        <!-- Upload Image Button -->
-        <label class="button" for="image-upload">📷 Upload Image</label>
-        <input type="file" id="image-upload" accept="image/*">
-        <p id="image-status" class="hidden">✅ Image Selected</p>
-        
-        <!-- Enter Caption Button -->
-        <button class="button" id="enter-caption">📝 Enter Caption</button>
-        <p id="caption-status" class="hidden"></p>
-        
-        <!-- Pick Date/Time Button -->
-        <button class="button" id="pick-datetime">📅 Pick Date & Time</button>
-        <input type="date" id="schedule-date">
-        <input type="time" id="schedule-time">
-        <p id="time-status" class="hidden">✅ Date Selected</p>
-        
-        <!-- Schedule Post Button -->
-        <button class="button" id="schedule-post">🚀 Schedule Post</button>
-        
-        <!-- Scheduled Posts Section -->
-        <h2>Scheduled Posts</h2>
-        <ul id="post-list"></ul>
-    </div>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            loadScheduledPosts();
+document.getElementById("schedule-post").addEventListener("click", function() {
+    let imageInput = document.getElementById("image-upload");
+    if (imageInput.files.length === 0) {
+        alert("❌ Please select an image.");
+        return;
+    }
+
+    let caption = document.getElementById("caption-status").textContent.includes("✅ Caption Added:")
+        ? document.getElementById("caption-status").textContent.replace("✅ Caption Added: ", "").trim()
+        : "";
+    let scheduleDate = document.getElementById("schedule-date").value.trim();
+    let scheduleTime = document.getElementById("schedule-time").value.trim();
+    let scheduleDateTime = `${scheduleDate} ${scheduleTime}`;
+
+    if (caption === "" || scheduleDate === "" || scheduleTime === "") {
+        alert("❌ Please enter a caption and select a date & time.");
+        return;
+    }
+
+    let imageFile = imageInput.files[0];
+    let formData = new FormData();
+    formData.append("file", imageFile);
+
+    // Step 1: Upload Image to imgbb (Free Image Hosting)
+    fetch("https://api.imgbb.com/1/upload?key=YOUR_IMGBB_API_KEY", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) throw new Error("Image upload failed");
+
+        let imageUrl = data.data.url; // Get uploaded image URL
+
+        let postData = {
+            image: imageUrl, // Send Image URL instead of Base64
+            caption: caption,
+            scheduled_time: scheduleDateTime
+        };
+
+        // Step 2: Send Post Data to Make.com Webhook
+        return fetch("https://hook.eu2.make.com/tm8tj1xohh2eh6bs5b0gw9irhlpuqmj2", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(postData)
         });
-
-        document.getElementById("image-upload").addEventListener("change", function() {
-            document.getElementById("image-status").classList.remove("hidden");
-        });
-        
-        document.getElementById("enter-caption").addEventListener("click", function() {
-            let caption = prompt("Enter your caption:");
-            if (caption) {
-                document.getElementById("caption-status").textContent = "✅ Caption Added: " + caption;
-                document.getElementById("caption-status").classList.remove("hidden");
-            }
-        });
-
-        document.getElementById("pick-datetime").addEventListener("click", function() {
-            document.getElementById("schedule-date").style.display = "block";
-            document.getElementById("schedule-time").style.display = "block";
-            document.getElementById("schedule-date").focus();
-        });
-
-        document.getElementById("schedule-date").addEventListener("change", function() {
-            document.getElementById("schedule-time").focus();
-        });
-
-        document.getElementById("schedule-time").addEventListener("change", function() {
-            let selectedDate = document.getElementById("schedule-date").value;
-            let selectedTime = document.getElementById("schedule-time").value;
-
-            if (selectedDate && selectedTime) {
-                let formattedDateTime = `${selectedDate} ${selectedTime}`;
-                document.getElementById("time-status").classList.remove("hidden");
-                document.getElementById("time-status").textContent = "✅ Date Selected: " + formattedDateTime;
-            }
-        });
-
-        document.getElementById("schedule-post").addEventListener("click", function() {
-            let imageInput = document.getElementById("image-upload");
-            if (imageInput.files.length === 0) {
-                alert("❌ Please select an image.");
-                return;
-            }
-
-            let caption = document.getElementById("caption-status").textContent.includes("✅ Caption Added:")
-                ? document.getElementById("caption-status").textContent.replace("✅ Caption Added: ", "").trim()
-                : "";
-            let scheduleDate = document.getElementById("schedule-date").value.trim();
-            let scheduleTime = document.getElementById("schedule-time").value.trim();
-            let scheduleDateTime = `${scheduleDate} ${scheduleTime}`;
-
-            if (caption === "" || scheduleDate === "" || scheduleTime === "") {
-                alert("❌ Please enter a caption and select a date & time.");
-                return;
-            }
-
-            let imageFile = imageInput.files[0];
-            let reader = new FileReader();
-
-            reader.onloadend = function() {
-                let postData = {
-                    image: reader.result, // Base64 encoded image
-                    caption: caption,
-                    scheduled_time: scheduleDateTime
-                };
-
-                fetch("https://hook.eu2.make.com/tm8tj1xohh2eh6bs5b0gw9irhlpuqmj2", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(postData)
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Network response was not ok");
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    alert("🎉 Post Sent to Make.com Successfully!");
-                })
-                .catch(error => {
-                    console.error("❌ Error:", error);
-                    alert("Failed to send post to Make.com. Check console for details.");
-                });
-            };
-
-            reader.readAsDataURL(imageFile);
-        });
-    </script>
-</body>
-</html>
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Failed to send post to Make.com");
+        }
+        return response.json();
+    })
+    .then(() => {
+        alert("🎉 Post Sent to Make.com Successfully!");
+    })
+    .catch(error => {
+        console.error("❌ Error:", error);
+        alert("Failed to send post to Make.com. Check console for details.");
+    });
+});
