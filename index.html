@@ -31,7 +31,8 @@
             margin-top: 10px;
         }
         input[type="file"], input[type="date"], input[type="time"] {
-            display: none;
+            visibility: hidden;
+            position: absolute;
         }
         .hidden {
             display: none;
@@ -68,8 +69,8 @@
         
         <!-- Pick Date/Time Button -->
         <button class="button" id="pick-datetime">📅 Pick Date & Time</button>
-        <input type="date" id="schedule-date" class="hidden">
-        <input type="time" id="schedule-time" class="hidden">
+        <input type="date" id="schedule-date">
+        <input type="time" id="schedule-time">
         <p id="time-status" class="hidden">✅ Date Selected</p>
         
         <!-- Schedule Post Button -->
@@ -97,17 +98,12 @@
             }
         });
 
-        // Fix: Ensure Date/Time selection works properly in Firefox & all browsers
         document.getElementById("pick-datetime").addEventListener("click", function() {
-            let dateInput = document.getElementById("schedule-date");
-            dateInput.classList.remove("hidden");
-            dateInput.showPicker(); // Show the date picker
+            document.getElementById("schedule-date").click();
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
-            let timeInput = document.getElementById("schedule-time");
-            timeInput.classList.remove("hidden");
-            setTimeout(() => timeInput.showPicker(), 200); // Delay to ensure smooth opening
+            document.getElementById("schedule-time").click();
         });
 
         document.getElementById("schedule-time").addEventListener("change", function() {
