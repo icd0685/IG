@@ -1,4 +1,4 @@
-<!DOCTYPE html>\>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -98,11 +98,13 @@
         });
         
         document.getElementById("pick-datetime").addEventListener("click", function() {
-            document.getElementById("schedule-date").click();
+            let dateInput = document.getElementById("schedule-date");
+            dateInput.showPicker();
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
-            document.getElementById("schedule-time").click();
+            let timeInput = document.getElementById("schedule-time");
+            timeInput.showPicker();
         });
 
         document.getElementById("schedule-time").addEventListener("change", function() {
