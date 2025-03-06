@@ -76,6 +76,28 @@
     </div>
     
     <script>
+        document.getElementById("image-upload").addEventListener("change", function() {
+            document.getElementById("image-status").classList.remove("hidden");
+        });
+
+        document.getElementById("enter-caption").addEventListener("click", function() {
+            let caption = prompt("Enter your caption:");
+            if (caption) {
+                document.getElementById("caption-status").textContent = "✅ Caption Added: " + caption;
+                document.getElementById("caption-status").classList.remove("hidden");
+            }
+        });
+
+        document.getElementById("pick-datetime").addEventListener("click", function() {
+            document.getElementById("schedule-date").style.display = "block";
+            document.getElementById("schedule-time").style.display = "block";
+            document.getElementById("schedule-date").focus();
+        });
+
+        document.getElementById("schedule-date").addEventListener("change", function() {
+            document.getElementById("schedule-time").focus();
+        });
+
         document.getElementById("schedule-post").addEventListener("click", function() {
             let imageInput = document.getElementById("image-upload");
             if (imageInput.files.length === 0) {
