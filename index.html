@@ -61,9 +61,16 @@
     </div>
     
     <script>
-        document.getElementById("image-upload").addEventListener("change", function() {
-            document.getElementById("image-status").classList.remove("hidden");
-        });
+        document.getElementById("pick-datetime").addEventListener("click", function() {
+    let datetimeInput = document.getElementById("schedule-time");
+    datetimeInput.focus();  // Ensure it gets focus first
+    datetimeInput.showPicker(); // Force open the picker (works in most browsers)
+});
+
+document.getElementById("schedule-time").addEventListener("change", function() {
+    document.getElementById("time-status").classList.remove("hidden");
+    document.getElementById("time-status").textContent = "✅ Date Selected: " + this.value;
+});
         
         document.getElementById("enter-caption").addEventListener("click", function() {
             let caption = prompt("Enter your caption:");
