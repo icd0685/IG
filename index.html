@@ -115,3 +115,41 @@
 
             if (!image || caption === "" || scheduleTime === "") {
                 alert("❌ Please select an image, enter a caption, and choose a date.");
+                return;
+            }
+
+            let post = { image, caption, scheduleTime };
+            let posts = JSON.parse(localStorage.getItem("scheduledPosts")) || [];
+            posts.push(post);
+            localStorage.setItem("scheduledPosts", JSON.stringify(posts));
+
+            alert("🎉 Post Scheduled Successfully!");
+            loadScheduledPosts();
+        });
+
+        function loadScheduledPosts() {
+            let posts = JSON.parse(localStorage.getItem("scheduledPosts")) || [];
+            let postList = document.getElementById("post-list");
+            postList.innerHTML = "";
+
+            posts.forEach((post, index) => {
+                let listItem = document.createElement("li");
+                listItem.innerHTML = `
+                    <img src="${post.image}" width="100">
+                    <p>${post.caption}</p>
+                    <p>📅 Scheduled: ${post.scheduleTime}</p>
+                    <button onclick="deletePost(${index})">🗑 Delete</button>
+                `;
+                postList.appendChild(listItem);
+            });
+        }
+
+        function deletePost(index) {
+            let posts = JSON.parse(localStorage.getItem("scheduledPosts")) || [];
+            posts.splice(index, 1);
+            localStorage.setItem("scheduledPosts", JSON.stringify(posts));
+            loadScheduledPosts();
+        }
+    </script>
+</body>
+</html>
