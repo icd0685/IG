@@ -96,11 +96,15 @@
             }
         });
         
-        document.getElementById("pick-datetime").addEventListener("click", function() {
-            let datetimeInput = document.getElementById("schedule-time");
-            datetimeInput.focus();
-            datetimeInput.showPicker();
-        });
+        document.getElementById("schedule-time").addEventListener("change", function() {
+    let selectedDate = new Date(this.value);
+    let formattedDate = selectedDate.toLocaleString('en-US', {
+        year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    document.getElementById("time-status").classList.remove("hidden");
+    document.getElementById("time-status").textContent = "✅ Date Selected: " + formattedDate;
+});
+
         
         document.getElementById("schedule-time").addEventListener("change", function() {
             document.getElementById("time-status").classList.remove("hidden");
