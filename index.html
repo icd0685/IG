@@ -98,13 +98,13 @@
         });
         
         document.getElementById("pick-datetime").addEventListener("click", function() {
-            let dateInput = document.getElementById("schedule-date");
-            dateInput.showPicker();
+            document.getElementById("schedule-date").classList.remove("hidden");
+            document.getElementById("schedule-date").focus();
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
-            let timeInput = document.getElementById("schedule-time");
-            timeInput.showPicker();
+            document.getElementById("schedule-time").classList.remove("hidden");
+            document.getElementById("schedule-time").focus();
         });
 
         document.getElementById("schedule-time").addEventListener("change", function() {
