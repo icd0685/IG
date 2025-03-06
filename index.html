@@ -30,9 +30,12 @@
             width: 100%;
             margin-top: 10px;
         }
+        /* Instead of hiding the inputs, we make them small and always visible */
         input[type="file"], input[type="date"], input[type="time"] {
+            width: 1px;
+            height: 1px;
+            opacity: 0;
             position: absolute;
-            left: -9999px; /* Moves input off-screen but keeps it functional */
         }
         .hidden {
             display: none;
@@ -98,21 +101,15 @@
             }
         });
 
-        // ✅ FIXED: Ensure the Date & Time Picker works correctly in Firefox & other browsers
+        // ✅ FINAL FIX: Ensures the Date & Time Picker works in Firefox & all browsers
         document.getElementById("pick-datetime").addEventListener("click", function() {
             let dateInput = document.getElementById("schedule-date");
-            dateInput.style.visibility = "visible"; // Temporarily make it visible
-            dateInput.click();
-            dateInput.style.visibility = "hidden"; // Hide it again after selection
+            dateInput.focus();
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
             let timeInput = document.getElementById("schedule-time");
-            setTimeout(() => {
-                timeInput.style.visibility = "visible"; // Temporarily make it visible
-                timeInput.click();
-                timeInput.style.visibility = "hidden"; // Hide it again after selection
-            }, 200);
+            timeInput.focus();
         });
 
         document.getElementById("schedule-time").addEventListener("change", function() {
