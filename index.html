@@ -141,7 +141,7 @@
             let formData = new FormData();
             formData.append("file", imageFile);
 
-            fetch("https://api.imgbb.com/1/upload?key=56e75859f2e844533e76f6829a52c173", {
+            fetch("https://api.imgbb.com/1/upload?expiration=600&key=56e75859f2e844533e76f6829a52c173", {
                 method: "POST",
                 body: formData
             })
