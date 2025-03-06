@@ -31,10 +31,7 @@
             margin-top: 10px;
         }
         input[type="file"], input[type="date"], input[type="time"] {
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            position: absolute;
+            display: none;
         }
         .hidden {
             display: none;
@@ -101,6 +98,8 @@
         });
 
         document.getElementById("pick-datetime").addEventListener("click", function() {
+            document.getElementById("schedule-date").style.display = "block";
+            document.getElementById("schedule-time").style.display = "block";
             document.getElementById("schedule-date").focus();
         });
 
