@@ -30,7 +30,7 @@
             width: 100%;
             margin-top: 10px;
         }
-        input[type="file"], input[type="date", input[type="time"] {
+        input[type="file"], input[type="date"], input[type="time"] {
             display: none;
         }
         .hidden {
@@ -120,7 +120,11 @@
 
         document.getElementById("schedule-post").addEventListener("click", function() {
             let imageInput = document.getElementById("image-upload");
-            let image = imageInput.files.length > 0 ? URL.createObjectURL(imageInput.files[0]) : null;
+            if (imageInput.files.length === 0) {
+                alert("❌ Please select an image.");
+                return;
+            }
+
             let caption = document.getElementById("caption-status").textContent.includes("✅ Caption Added:")
                 ? document.getElementById("caption-status").textContent.replace("✅ Caption Added: ", "").trim()
                 : "";
@@ -128,32 +132,44 @@
             let scheduleTime = document.getElementById("schedule-time").value.trim();
             let scheduleDateTime = `${scheduleDate} ${scheduleTime}`;
 
-            if (!image || caption === "" || scheduleDate === "" || scheduleTime === "") {
-                alert("❌ Please select an image, enter a caption, and choose a date & time.");
+            if (caption === "" || scheduleDate === "" || scheduleTime === "") {
+                alert("❌ Please enter a caption and select a date & time.");
                 return;
             }
 
-            let postData = {
-                image: image,
-                caption: caption,
-                scheduled_time: scheduleDateTime
+            let imageFile = imageInput.files[0];
+            let reader = new FileReader();
+
+            reader.onloadend = function() {
+                let postData = {
+                    image: reader.result, // Base64 encoded image
+                    caption: caption,
+                    scheduled_time: scheduleDateTime
+                };
+
+                fetch("https://hook.eu2.make.com/tm8tj1xohh2eh6bs5b0gw9irhlpuqmj2", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(postData)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    alert("🎉 Post Sent to Make.com Successfully!");
+                })
+                .catch(error => {
+                    console.error("❌ Error:", error);
+                    alert("Failed to send post to Make.com. Check console for details.");
+                });
             };
 
-            fetch("https://hook.eu2.make.com/tm8tj1xohh2eh6bs5b0gw9irhlpuqmj2", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(postData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert("🎉 Post Sent to Make.com Successfully!");
-            })
-            .catch(error => {
-                console.error("❌ Error:", error);
-                alert("Failed to send post to Make.com");
-            });
+            reader.readAsDataURL(imageFile);
         });
     </script>
 </body>
