@@ -31,8 +31,8 @@
             margin-top: 10px;
         }
         input[type="file"], input[type="date"], input[type="time"] {
-            visibility: hidden;
             position: absolute;
+            left: -9999px; /* Moves input off-screen but keeps it functional */
         }
         .hidden {
             display: none;
@@ -98,12 +98,19 @@
             }
         });
 
+        // Fix: Ensure Date/Time selection works properly in Firefox & all browsers
         document.getElementById("pick-datetime").addEventListener("click", function() {
-            document.getElementById("schedule-date").click();
+            let dateInput = document.getElementById("schedule-date");
+            dateInput.focus();
+            dateInput.showPicker(); // Opens date picker
         });
 
         document.getElementById("schedule-date").addEventListener("change", function() {
-            document.getElementById("schedule-time").click();
+            let timeInput = document.getElementById("schedule-time");
+            setTimeout(() => {
+                timeInput.focus();
+                timeInput.showPicker(); // Opens time picker
+            }, 200);
         });
 
         document.getElementById("schedule-time").addEventListener("change", function() {
